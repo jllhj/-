@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<ul id="userList">
+    {% for k,v in users.items() %}
+        <li uid="{{k}}">{{v.name}} ({{v.count}})</li>
+    {% endfor %}
+</ul>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    /* $(函数)=$(document).ready(函数) 网页加载完执行 */
+    $(function () {
+        $('#userList').on('click','li',function () {
+            var uid = $(this).attr('uid');
+            $.ajax({
+                url:'/vote',
+                type:'POST',
+                data:{uid:uid},
+                success:function (arg) {
+                    console.log(arg)
+                }
+
+            })
+        });
+        get_vote()
+    });
+
+    /* 获取投票信息 */
+    function get_vote() {
+        $.ajax({
+            url:'/get/vote',
+            type:'GET',
+            dataType:'JSON',
+            success:function (arg) {
+                if(arg.status){
+                      $('#userList').empty();
+                $.each(arg.data,function (k,v) {
+                    var li = document.createElement('li');
+                    li.setAttribute('uid',k);
+                    li.innerText = v.name + '('+v.count+')';
+                    $('#userList').append(li);
+                })
+                }get_vote()
+
+            }
+        })
+    }
+
+    setInterval(get_vote,2000);
+</script>
+</body>
+</html>
+
+
+<!--<ul>-->
+    <!--{% for k,v in users.items() %}-->
+        <!--<li ondblclick="doVote({{k}})">{{v.name}} ({{v.count}})</li>-->
+    <!--{% endfor %}-->
+<!--</ul>-->
+
+<!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>-->
+<!--<script>-->
+    <!--function doVote(uid) {-->
+        <!--$.ajax({-->
+            <!--url:'/vote',-->
+            <!--type:'POST',-->
+            <!--data:{uid:uid},-->
+            <!--success:function (arg) {-->
+                <!--console.log(arg)-->
+            <!--}-->
+
+
+        <!--})-->
+    <!--}-->
+<!--</script>-->
